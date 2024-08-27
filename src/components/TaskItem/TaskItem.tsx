@@ -34,11 +34,8 @@ export function TaskItem({
   }
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        onPress={onPressTask}
-        style={[styles.itemContainer, style]}
-      >
+    <View style={[styles.container, style]}>
+      <TouchableOpacity onPress={onPressTask} style={[styles.itemContainer]}>
         <Text style={styles.text}>{task.title}</Text>
       </TouchableOpacity>
       {edit && (

@@ -16,16 +16,29 @@ export function HomeScreen() {
   const [isEdit, setIsEdit] = useState(false);
 
   const tasks = useMemo(() => {
+    let tasksToRender = all;
     if (taskCollection === "active") {
-      return active;
+      tasksToRender = active;
     }
 
     if (taskCollection === "completed") {
-      return completed;
+      tasksToRender = completed;
     }
 
-    return all;
-  }, [taskCollection, active, completed, all]);
+    return Object.keys(tasksToRender).map((key, index) => {
+      const task = tasksToRender[+key];
+      return (
+        <TaskItem
+          edit={isEdit}
+          onPress={completeTask}
+          onPressDelete={deleteTask}
+          key={task.id}
+          style={{ marginTop: index === 0 ? 0 : theme.baseline }}
+          task={task}
+        />
+      );
+    });
+  }, [taskCollection, active, completed, all, isEdit]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -88,18 +101,7 @@ export function HomeScreen() {
         />
       </View>
       <Text style={styles.title}>Active</Text>
-      {tasks.map((task, index) => (
-        <View key={task.id}>
-          <TaskItem
-            edit={isEdit}
-            onPress={completeTask}
-            onPressDelete={deleteTask}
-            key={task.id}
-            style={{ marginTop: index === 0 ? 0 : theme.baseline }}
-            task={task}
-          />
-        </View>
-      ))}
+      {tasks}
     </View>
   );
 }

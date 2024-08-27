@@ -10,16 +10,16 @@ export type Task = {
   category: TaskCategory;
 };
 
-// type TaskMap = {
-//   [id: number]: Task
-// }
+type TaskMap = {
+  [id: number]: Task;
+};
 
 type NewTask = Omit<Task, "completed" | "id">;
 
 type TodoContextValue = {
-  all: Task[];
-  completed: Task[];
-  active: Task[];
+  all: TaskMap;
+  completed: TaskMap;
+  active: TaskMap;
   addTask: (newTask: NewTask) => void;
   completeTask: (task: Task) => void;
   deleteTask: (task: Task) => void;
@@ -28,59 +28,45 @@ type TodoContextValue = {
 export const TodoContext = createContext<TodoContextValue>(undefined!);
 
 export function TodoProvider({ children }: PropsWithChildren) {
-  const [all, setAll] = useState<Task[]>([]);
-  const [completed, setCompleted] = useState<Task[]>([]);
-  const [active, setActive] = useState<Task[]>([]);
+  const [all, setAll] = useState<TaskMap>([]);
+  const [completed, setCompleted] = useState<TaskMap>([]);
+  const [active, setActive] = useState<TaskMap>([]);
 
   function deleteTask(task: Task) {
     setAll((prevAll) => {
-      const index = prevAll.findIndex((t) => t.id === task.id);
-      if (index > -1) {
-        prevAll.splice(index, 1);
-      }
-      return [...prevAll];
+      delete prevAll[task.id];
+      return { ...prevAll };
     });
 
     setActive((prevActive) => {
-      const index = prevActive.findIndex((t) => t.id === task.id);
-      if (index > -1) {
-        prevActive.splice(index, 1);
-      }
-      return [...prevActive];
+      delete prevActive[task.id];
+      return { ...prevActive };
     });
 
     setCompleted((prevCompleted) => {
-      const index = prevCompleted.findIndex((t) => t.id === task.id);
-      if (index > -1) {
-        prevCompleted.splice(index, 1);
-      }
-      return [...prevCompleted];
+      delete prevCompleted[task.id];
+      return { ...prevCompleted };
     });
   }
 
   function completeTask(task: Task) {
-    const mutated = { ...task };
-    mutated.completed = true;
-
     setAll((prevAll) => {
-      const item = prevAll.find((t) => t.id === mutated.id);
-      if (item) {
-        item.completed = true;
+      if (prevAll[task.id]) {
+        prevAll[task.id].completed = true;
       }
-      return [...prevAll];
+      return { ...prevAll };
     });
 
     setActive((prevActive) => {
-      const item = prevActive.find((t) => t.id === mutated.id);
-      if (item) {
-        item.completed = true;
-      }
-      return [...prevActive];
+      delete prevActive[task.id];
+      return { ...prevActive };
     });
 
     setCompleted((prevCompleted) => {
-      prevCompleted.push(mutated);
-      return [...prevCompleted];
+      const mutated = { ...task };
+      mutated.completed = true;
+      prevCompleted[mutated.id] = mutated;
+      return { ...prevCompleted };
     });
   }
 
@@ -92,12 +78,12 @@ export function TodoProvider({ children }: PropsWithChildren) {
     };
 
     setAll((prevAll) => {
-      prevAll.push(taskToAdd);
-      return [...prevAll];
+      prevAll[taskToAdd.id] = taskToAdd;
+      return { ...prevAll };
     });
     setActive((prevActive) => {
-      prevActive.push(taskToAdd);
-      return [...prevActive];
+      prevActive[taskToAdd.id] = taskToAdd;
+      return { ...prevActive };
     });
   }
 
