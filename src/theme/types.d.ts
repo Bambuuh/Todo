@@ -9,7 +9,10 @@ type AppThemeColor = {
 };
 
 type AppTheme = {
+  isLight: boolean;
   background: AppThemeColor;
   card: AppThemeColor;
   primary: AppThemeColor;
+  input: AppThemeColor;
+  error: string;
 } & Spacings;

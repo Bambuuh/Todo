@@ -1,10 +1,12 @@
-import { ThemeProvider } from "./context";
+import { ThemeProvider, TodoProvider } from "./context";
 import { RootNavigation } from "./navigation";
 
 export function AppEntry() {
   return (
     <ThemeProvider>
-      <RootNavigation />
+      <TodoProvider>
+        <RootNavigation />
+      </TodoProvider>
     </ThemeProvider>
   );
 }
