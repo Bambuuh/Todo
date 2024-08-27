@@ -15,7 +15,7 @@ type TaskMap = {
   [id: number]: Task;
 };
 
-type TaskCollection = {
+export type TaskCollection = {
   all: TaskMap;
   completed: TaskMap;
   active: TaskMap;
@@ -52,6 +52,27 @@ export function TodoProvider({ children }: PropsWithChildren) {
         setTasks(storedData);
       }
     };
+    // const init2 = () => {
+    //   const base: TaskCollection = {
+    //     active: {},
+    //     all: {},
+    //     completed: {},
+    //   };
+    //   Array.from({ length: 1000 }, (_, index) => index).forEach((i) => {
+    //     const task: Task = {
+    //       id: i,
+    //       title: `index ${i}`,
+    //       completed: false,
+    //       category: i % 2 ? "personal" : "work",
+    //     };
+    //     base.active[i] = task;
+    //     base.all[i] = task;
+    //     base.completed[i] = task;
+    //   });
+
+    //   setTasks(base);
+    // };
+    // init2();
     init();
   }, []);
 
