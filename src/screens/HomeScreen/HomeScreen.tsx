@@ -2,10 +2,12 @@ import { useNavigation } from "@react-navigation/native";
 import { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Button, TaskItem, ToggleButton } from "../../components";
-import { useTheme, useTodo } from "../../context";
+import { TaskCategory, useTheme, useTodo } from "../../context";
 import { NavigationScreenProps } from "../../navigation/types";
 
 type Collection = "all" | "active" | "completed";
+
+type DisplayCategory = TaskCategory | "all";
 
 export function HomeScreen() {
   const navigation = useNavigation<NavigationScreenProps<"Home">>();
@@ -13,6 +15,7 @@ export function HomeScreen() {
   const styles = getStyles(theme);
   const { tasks, completeTask, deleteTask } = useTodo();
   const [taskCollection, setTaskCollection] = useState<Collection>("active");
+  const [taskCategory, setTaskCategory] = useState<DisplayCategory>("all");
   const [isEdit, setIsEdit] = useState(false);
 
   const taskItems = useMemo(() => {
@@ -25,7 +28,14 @@ export function HomeScreen() {
       collection = tasks.completed;
     }
 
-    return Object.keys(collection).map((key, index) => {
+    const keys = Object.keys(collection);
+
+    const filtered =
+      taskCategory === "all"
+        ? keys
+        : keys.filter((key) => collection[+key].category === taskCategory);
+
+    return filtered.map((key, index) => {
       const task = collection[+key];
       return (
         <TaskItem
@@ -38,7 +48,7 @@ export function HomeScreen() {
         />
       );
     });
-  }, [taskCollection, tasks, isEdit]);
+  }, [taskCollection, tasks, isEdit, taskCategory]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -67,10 +77,6 @@ export function HomeScreen() {
     navigation.navigate("AddTask");
   }
 
-  function onPressCollection(collection: Collection) {
-    setTaskCollection(collection);
-  }
-
   return (
     <View style={styles.container}>
       <Button
@@ -79,23 +85,45 @@ export function HomeScreen() {
         title="Add task"
       />
       <View style={styles.filterRow}>
+        <ToggleButton<DisplayCategory>
+          title="All"
+          onPress={setTaskCategory}
+          value="all"
+          active={taskCategory === "all"}
+        />
+        <ToggleButton<DisplayCategory>
+          style={styles.toggleButton}
+          title="Personal"
+          onPress={setTaskCategory}
+          value="personal"
+          active={taskCategory === "personal"}
+        />
+        <ToggleButton<DisplayCategory>
+          style={styles.toggleButton}
+          title="Work"
+          onPress={setTaskCategory}
+          value="work"
+          active={taskCategory === "work"}
+        />
+      </View>
+      <View style={styles.filterRow}>
         <ToggleButton<Collection>
           title="Active"
-          onPress={onPressCollection}
+          onPress={setTaskCollection}
           value="active"
           active={taskCollection === "active"}
         />
         <ToggleButton<Collection>
           style={styles.toggleButton}
           title="Completed"
-          onPress={onPressCollection}
+          onPress={setTaskCollection}
           value="completed"
           active={taskCollection === "completed"}
         />
         <ToggleButton<Collection>
           style={styles.toggleButton}
           title="All"
-          onPress={onPressCollection}
+          onPress={setTaskCollection}
           value="all"
           active={taskCollection === "all"}
         />
