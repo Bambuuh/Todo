@@ -38,6 +38,7 @@ export function AddTaskScreen() {
   return (
     <View style={styles.container}>
       <Input
+        autoFocus
         placeholder="Title"
         style={styles.input}
         value={title}
