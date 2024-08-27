@@ -11,22 +11,22 @@ export function HomeScreen() {
   const navigation = useNavigation<NavigationScreenProps<"Home">>();
   const { theme, setTheme } = useTheme();
   const styles = getStyles(theme);
-  const { active, all, completed, completeTask, deleteTask } = useTodo();
+  const { tasks, completeTask, deleteTask } = useTodo();
   const [taskCollection, setTaskCollection] = useState<Collection>("active");
   const [isEdit, setIsEdit] = useState(false);
 
-  const tasks = useMemo(() => {
-    let tasksToRender = all;
+  const taskItems = useMemo(() => {
+    let collection = tasks.all;
     if (taskCollection === "active") {
-      tasksToRender = active;
+      collection = tasks.active;
     }
 
     if (taskCollection === "completed") {
-      tasksToRender = completed;
+      collection = tasks.completed;
     }
 
-    return Object.keys(tasksToRender).map((key, index) => {
-      const task = tasksToRender[+key];
+    return Object.keys(collection).map((key, index) => {
+      const task = collection[+key];
       return (
         <TaskItem
           edit={isEdit}
@@ -38,7 +38,7 @@ export function HomeScreen() {
         />
       );
     });
-  }, [taskCollection, active, completed, all, isEdit]);
+  }, [taskCollection, tasks, isEdit]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -101,7 +101,7 @@ export function HomeScreen() {
         />
       </View>
       <Text style={styles.title}>Active</Text>
-      {tasks}
+      {taskItems}
     </View>
   );
 }

@@ -1,4 +1,5 @@
-import { PropsWithChildren, createContext, useState } from "react";
+import { useAsyncStorage } from "@react-native-async-storage/async-storage";
+import { PropsWithChildren, createContext, useEffect, useState } from "react";
 
 export type TaskCategory = "work" | "personal";
 
@@ -14,59 +15,74 @@ type TaskMap = {
   [id: number]: Task;
 };
 
-type NewTask = Omit<Task, "completed" | "id">;
-
-type TodoContextValue = {
+type TaskCollection = {
   all: TaskMap;
   completed: TaskMap;
   active: TaskMap;
+};
+
+type NewTask = Omit<Task, "completed" | "id">;
+
+type TodoContextValue = {
+  tasks: TaskCollection;
   addTask: (newTask: NewTask) => void;
   completeTask: (task: Task) => void;
   deleteTask: (task: Task) => void;
 };
 
+const INITIAL: TaskCollection = {
+  all: {},
+  completed: {},
+  active: {},
+};
+
+const key = "@todo/tasks";
+
 export const TodoContext = createContext<TodoContextValue>(undefined!);
 
 export function TodoProvider({ children }: PropsWithChildren) {
-  const [all, setAll] = useState<TaskMap>([]);
-  const [completed, setCompleted] = useState<TaskMap>([]);
-  const [active, setActive] = useState<TaskMap>([]);
+  const { getItem, setItem } = useAsyncStorage(key);
+  const [tasks, setTasks] = useState<TaskCollection>(INITIAL);
+
+  useEffect(() => {
+    const init = async () => {
+      const storedJson = await getItem();
+      if (storedJson) {
+        const storedData = JSON.parse(storedJson) as TaskCollection;
+        setTasks(storedData);
+      }
+    };
+    init();
+  }, []);
+
+  function updateStorage(updated: TaskCollection) {
+    setItem(JSON.stringify(updated));
+  }
 
   function deleteTask(task: Task) {
-    setAll((prevAll) => {
-      delete prevAll[task.id];
-      return { ...prevAll };
-    });
-
-    setActive((prevActive) => {
-      delete prevActive[task.id];
-      return { ...prevActive };
-    });
-
-    setCompleted((prevCompleted) => {
-      delete prevCompleted[task.id];
-      return { ...prevCompleted };
+    setTasks((prevTasks) => {
+      delete prevTasks.all[task.id];
+      delete prevTasks.active[task.id];
+      delete prevTasks.completed[task.id];
+      updateStorage(prevTasks);
+      return { ...prevTasks };
     });
   }
 
   function completeTask(task: Task) {
-    setAll((prevAll) => {
-      if (prevAll[task.id]) {
-        prevAll[task.id].completed = true;
-      }
-      return { ...prevAll };
-    });
-
-    setActive((prevActive) => {
-      delete prevActive[task.id];
-      return { ...prevActive };
-    });
-
-    setCompleted((prevCompleted) => {
+    setTasks((prevTasks) => {
       const mutated = { ...task };
       mutated.completed = true;
-      prevCompleted[mutated.id] = mutated;
-      return { ...prevCompleted };
+      prevTasks.completed[mutated.id] = mutated;
+
+      delete prevTasks.active[task.id];
+
+      if (prevTasks.all[task.id]) {
+        prevTasks.all[task.id].completed = true;
+      }
+
+      updateStorage(prevTasks);
+      return { ...prevTasks };
     });
   }
 
@@ -77,22 +93,18 @@ export function TodoProvider({ children }: PropsWithChildren) {
       completed: false,
     };
 
-    setAll((prevAll) => {
-      prevAll[taskToAdd.id] = taskToAdd;
-      return { ...prevAll };
-    });
-    setActive((prevActive) => {
-      prevActive[taskToAdd.id] = taskToAdd;
-      return { ...prevActive };
+    setTasks((prevTasks) => {
+      prevTasks.all[taskToAdd.id] = taskToAdd;
+      prevTasks.active[taskToAdd.id] = taskToAdd;
+      updateStorage(prevTasks);
+      return { ...prevTasks };
     });
   }
 
   return (
     <TodoContext.Provider
       value={{
-        all,
-        completed,
-        active,
+        tasks,
         addTask,
         completeTask,
         deleteTask,
