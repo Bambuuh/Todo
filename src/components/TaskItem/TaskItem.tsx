@@ -33,10 +33,29 @@ export function TaskItem({
     onPressDelete(task);
   }
 
+  function getPrettyCategory() {
+    return task.category.charAt(0).toUpperCase() + task.category.slice(1);
+  }
+
   return (
     <View style={[styles.container, style]}>
       <TouchableOpacity onPress={onPressTask} style={[styles.itemContainer]}>
-        <Text style={styles.text}>{task.title}</Text>
+        <View>
+          <Text style={styles.text}>{task.title}</Text>
+          <View style={styles.categoryContainer}>
+            <Text style={styles.categoryText}>{getPrettyCategory()}</Text>
+          </View>
+        </View>
+        <View
+          style={[
+            styles.doneBox,
+            {
+              backgroundColor: task.completed
+                ? "#66cf88"
+                : theme.background.color,
+            },
+          ]}
+        />
       </TouchableOpacity>
       {edit && (
         <TouchableOpacity
@@ -59,13 +78,15 @@ function getStyles(theme: AppTheme) {
       flex: 1,
       backgroundColor: theme.card.color,
       borderRadius: 12,
-      height: theme.baseline * 7,
-      justifyContent: "center",
-      paddingHorizontal: theme.screenPadding,
+      alignItems: "center",
+      justifyContent: "space-between",
+      padding: theme.screenPadding,
+      flexDirection: "row",
     },
     text: {
       fontSize: 16,
       fontWeight: "500",
+      color: theme.card.onColor,
     },
     removeContainer: {
       marginLeft: theme.baseline,
@@ -80,6 +101,21 @@ function getStyles(theme: AppTheme) {
       fontSize: 16,
       fontWeight: "500",
       color: "white",
+    },
+    categoryContainer: {
+      borderRadius: 8,
+      backgroundColor: theme.background.color,
+      padding: theme.baseline,
+      marginTop: theme.baseline,
+    },
+    categoryText: {
+      color: theme.background.onColor,
+      fontSize: 12,
+    },
+    doneBox: {
+      height: theme.baseline * 6,
+      width: theme.baseline * 6,
+      borderRadius: 4,
     },
   });
 }
