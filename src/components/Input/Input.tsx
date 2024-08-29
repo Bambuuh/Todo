@@ -23,6 +23,7 @@ function getStyles(theme: AppTheme) {
     },
     input: {
       height: theme.baseline * 5,
+      color: theme.input.onColor,
       paddingHorizontal: theme.screenPadding,
     },
   });

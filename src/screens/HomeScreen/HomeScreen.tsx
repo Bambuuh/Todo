@@ -33,7 +33,6 @@ export function HomeScreen() {
   const [taskCategory, setTaskCategory] = useState<DisplayCategory>("all");
   const [isEdit, setIsEdit] = useState(false);
   const { bottom } = useSafeAreaInsets();
-  const [input, setInput] = useState("");
 
   const taskItems = useMemo<Task[]>(() => {
     let collection = tasks[taskCollection];
@@ -44,6 +43,14 @@ export function HomeScreen() {
         : keys.filter((key) => collection[+key].category === taskCategory)
     ).map((key) => collection[+key]);
   }, [taskCollection, tasks, taskCategory]);
+
+  const onPressToggleTheme = useCallback(() => {
+    setTheme(theme.isLight ? "dark" : "light");
+  }, [theme, setTheme]);
+
+  const onPressEdit = useCallback(() => {
+    setIsEdit(!isEdit);
+  }, [isEdit, setIsEdit]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -58,15 +65,7 @@ export function HomeScreen() {
         </TouchableOpacity>
       ),
     });
-  }, [isEdit]);
-
-  function onPressToggleTheme() {
-    setTheme(theme.isLight ? "dark" : "light");
-  }
-
-  function onPressEdit() {
-    setIsEdit(!isEdit);
-  }
+  }, [isEdit, onPressToggleTheme, onPressEdit]);
 
   function onPressAddTask() {
     navigation.navigate("AddTask");
@@ -85,7 +84,7 @@ export function HomeScreen() {
         />
       );
     },
-    []
+    [isEdit, completeTask, deleteTask]
   );
 
   const contentContainerStyle: ViewStyle = {
@@ -102,7 +101,7 @@ export function HomeScreen() {
           onPress={onPressAddTask}
           title="Add task"
         />
-        <View style={styles.filterRow}>
+        <View style={[styles.filterRow, { marginBottom: theme.screenPadding }]}>
           <ToggleButton<DisplayCategory>
             title="All"
             onPress={setTaskCategory}
@@ -188,7 +187,6 @@ function getStyles(theme: AppTheme) {
     },
     filterRow: {
       flexDirection: "row",
-      marginBottom: theme.screenPadding,
     },
     toggleButton: {
       marginLeft: theme.baseline,

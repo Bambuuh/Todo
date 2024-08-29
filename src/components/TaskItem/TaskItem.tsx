@@ -46,25 +46,26 @@ export function TaskItem({
             <Text style={styles.categoryText}>{getPrettyCategory()}</Text>
           </View>
         </View>
-        <View
-          style={[
-            styles.doneBox,
-            {
-              backgroundColor: task.completed
-                ? "#66cf88"
-                : theme.background.color,
-            },
-          ]}
-        />
+        {edit ? (
+          <TouchableOpacity
+            style={styles.removeContainer}
+            onPress={onPressDeleteTask}
+          >
+            <Text style={styles.deleteText}>Delete</Text>
+          </TouchableOpacity>
+        ) : (
+          <View
+            style={[
+              styles.doneBox,
+              {
+                backgroundColor: task.completed
+                  ? "#66cf88"
+                  : theme.background.color,
+              },
+            ]}
+          />
+        )}
       </TouchableOpacity>
-      {edit && (
-        <TouchableOpacity
-          style={styles.removeContainer}
-          onPress={onPressDeleteTask}
-        >
-          <Text style={styles.deleteText}>Delete</Text>
-        </TouchableOpacity>
-      )}
     </View>
   );
 }
@@ -89,16 +90,15 @@ function getStyles(theme: AppTheme) {
       color: theme.card.onColor,
     },
     removeContainer: {
-      marginLeft: theme.baseline,
-      borderRadius: 12,
-      height: theme.baseline * 7,
-      width: theme.baseline * 7,
+      borderRadius: 4,
+      height: theme.baseline * 6,
+      width: theme.baseline * 6,
       backgroundColor: theme.error,
       alignItems: "center",
       justifyContent: "center",
     },
     deleteText: {
-      fontSize: 16,
+      fontSize: 14,
       fontWeight: "500",
       color: "white",
     },
