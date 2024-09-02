@@ -18,7 +18,7 @@ import {
   useTheme,
   useTodo,
 } from "../../context";
-import { NavigationScreenProps } from "../../navigation/types";
+import { NavigationScreenProps } from "../../navigation";
 
 type Collection = keyof TaskCollection;
 

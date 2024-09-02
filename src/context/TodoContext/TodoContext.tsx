@@ -52,7 +52,10 @@ export function TodoProvider({ children }: PropsWithChildren) {
         setTasks(storedData);
       }
     };
-    // const init2 = () => {
+
+    // Leaving this here to be able to initialize with a lot of items for testing purposes
+
+    // const init = () => {
     //   const base: TaskCollection = {
     //     active: {},
     //     all: {},
@@ -72,7 +75,8 @@ export function TodoProvider({ children }: PropsWithChildren) {
 
     //   setTasks(base);
     // };
-    // init2();
+    // init();
+
     init();
   }, []);
 

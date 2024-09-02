@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Button, Input, ToggleButton } from "../../components";
 import { TaskCategory, useTheme, useTodo } from "../../context";
-import { NavigationScreenProps } from "../../navigation/types";
+import { NavigationScreenProps } from "../../navigation";
 
 export function AddTaskScreen() {
   const navigation = useNavigation<NavigationScreenProps<"AddTask">>();
